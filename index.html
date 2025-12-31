@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 TOP10 대시보드</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #0d5aa7;
+            --secondary-blue: #1e7ec8;
+            --accent-teal: #00b8d4;
+            --light-blue: #e3f2fd;
+            --dark-blue: #01579b;
+            --hover-blue: #bbdefb;
+            
+            --white: #ffffff;
+            --gray-50: #f8fafb;
+            --gray-100: #ecf5f9;
+            --gray-200: #d9e5ed;
+            --gray-300: #b8cdd9;
+            --gray-400: #8ba8ba;
+            --gray-500: #5e7a8a;
+            --gray-600: #3d5566;
+            --gray-700: #2c3e4d;
+            --gray-800: #1a2833;
+            --gray-900: #0f1822;
+            --black: #000000;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'IBM Plex Sans KR', -apple-system, sans-serif;
+            background: #f5f5f5;
+            color: var(--gray-900);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: var(--white);
+            border-bottom: 2px solid #e0e0e0;
+            margin: -2rem -2rem 2rem -2rem;
+            padding: 0;
+        }
+
+        .nav-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+            padding: 0 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            border-bottom: 3px solid transparent;
+            font-family: 'IBM Plex Sans KR', sans-serif;
+        }
+
+        .nav-tab:hover {
+            color: #333;
+            background: #f9f9f9;
+        }
+
+        .nav-tab.active {
+            color: rgb(12,62,196);
+            border-bottom-color: rgb(12,62,196);
+            font-weight: 600;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            letter-spacing: -0.01em;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: var(--secondary-blue);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: var(--white);
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        select {
+            padding: 0.5rem 2rem 0.5rem 0.75rem;
+            background: var(--white);
+            border: 1px solid #d0d0d0;
+            color: #333;
+            font-size: 0.85rem;
+            font-family: 'IBM Plex Sans KR', sans-serif;
+            font-weight: 400;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            min-width: 200px;
+        }
+
+        select:hover {
+            border-color: #999;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+        }
+
+        /* Product Tabs */
+        .product-tabs {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 0.75rem;
+        }
+
+        .product-tabs-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            background: var(--white);
+            border: 1px solid rgb(122,122,122);
+            color: #666;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .tab:hover {
+            border-color: rgb(122,122,122);
+            color: #333;
+            background: #f9f9f9;
+        }
+
+        .tab.active {
+            background: rgb(12,62,196);
+            color: var(--white);
+            border-color: rgb(12,62,196);
+            font-weight: 600;
+        }
+
+        .total-count {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Two Column Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        /* Left Column - Table */
+        .left-column {
+            background: var(--white);
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .table-header {
+            padding: 0.875rem 1.25rem;
+            border-bottom: 2px solid #f0f0f0;
+            background: #fafafa;
+        }
+
+        .table-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .table-wrapper {
+            max-height: 700px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgb(18,45,143);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 0.875rem 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--white);
+            font-weight: 600;
+            border-bottom: none;
+            background: transparent;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e8e8e8;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        tbody tr.active {
+            background: #e3f2fd;
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            color: #333;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .badge-rank {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            color: #1976d2;
+            min-width: 40px;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 3px;
+        }
+
+        .badge-rank.top {
+            background: #1976d2;
+            color: var(--white);
+            border-color: #1976d2;
+            font-weight: 700;
+        }
+
+        .number-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: rgb(18,45,143);
+            font-size: 0.9rem;
+        }
+
+        /* Rank cell styling */
+        td:first-child {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.85rem;
+        }
+
+        /* Right Column - Details */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .detail-section {
+            background: var(--white);
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 0;
+        }
+
+        .detail-header {
+            padding: 0.875rem 1.25rem;
+            border-bottom: 1px solid #f0f0f0;
+            background: var(--white);
+        }
+
+        .detail-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-title .emoji {
+            font-size: 1rem;
+        }
+
+        .detail-meta {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #999;
+            font-family: 'IBM Plex Sans KR', sans-serif;
+            font-weight: 400;
+        }
+
+        .detail-content {
+            padding: 1.25rem;
+        }
+
+        /* Know-how Empty State */
+        .knowhow-empty {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: #f5f5f5;
+            border: none;
+        }
+
+        .knowhow-empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .knowhow-empty-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        .knowhow-content {
+            background: #fafafa;
+            border-left: 3px solid rgb(12,62,196);
+            padding: 1.5rem;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 0.85rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.5rem;
+            background: var(--white);
+            border: 1px solid rgb(122,122,122);
+            color: #666;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'IBM Plex Sans KR', sans-serif;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #666;
+            color: #333;
+        }
+
+        .btn-primary {
+            background: rgb(12,62,196);
+            color: var(--white);
+            border-color: rgb(12,62,196);
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .btn-primary:hover {
+            background: rgb(10,50,170);
+            border-color: rgb(10,50,170);
+        }
+
+        /* Stats Grid */
+        .stats-selector {
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-selector label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stats-selector select {
+            width: 100%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: #fafafa;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid #f0f0f0;
+        }
+
+        .stat-item:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgb(12,62,196);
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.02em;
+            color: rgb(18,45,143);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-sublabel {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 400;
+        }
+
+        /* Target List */
+        .target-list-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .target-list-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .target-list-wrapper::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        .target-list-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 4px;
+        }
+
+        .target-list-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-600);
+        }
+
+        .target-card {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .target-card:last-child {
+            border-bottom: none;
+        }
+
+        .target-card:hover {
+            background: var(--hover-blue);
+            padding-left: 2.5rem;
+            box-shadow: 0 2px 8px rgba(13, 90, 167, 0.1);
+        }
+
+        .target-info {
+            flex: 1;
+        }
+
+        .target-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+        }
+
+        .target-meta {
+            font-size: 0.85rem;
+            color: var(--secondary-blue);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            background: rgb(18,45,143);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .modal-subtitle {
+            padding: 1rem 2rem;
+            background: #f5f5f5;
+            font-size: 0.85rem;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.75rem;
+            cursor: pointer;
+            color: var(--white);
+            transition: var(--transition);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--white);
+            border: 1px solid #d0d0d0;
+            color: #333;
+            font-size: 0.85rem;
+            font-family: 'IBM Plex Sans KR', sans-serif;
+            transition: var(--transition);
+            border-radius: 4px;
+        }
+
+        .form-textarea {
+            min-height: 300px;
+            resize: vertical;
+            font-family: 'IBM Plex Sans KR', sans-serif;
+            line-height: 1.7;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: rgb(12,62,196);
+            box-shadow: 0 0 0 2px rgba(12,62,196, 0.1);
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .modal-footer {
+            padding: 1.25rem 2rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            background: #fafafa;
+        }
+
+        .modal-footer .btn {
+            min-width: 80px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .right-column {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-container">
+                <a href="index.html" class="nav-tab active">📊 대시보드</a>
+                <a href="knowhow.html" class="nav-tab">💡 영업 노하우</a>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>상품 TOP10 대시보드</h1>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="filters">
+                <label class="filter-label" style="margin-bottom: 0;">기준 주차</label>
+                <select id="weekSelector" onchange="applyFilters()">
+                    <option value="2024-W49">2024-W49 (12/02~12/08)</option>
+                    <option value="2024-W48">2024-W48 (11/25~12/01)</option>
+                </select>
+
+                <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 0;">
+                    <input type="checkbox" id="myBranchOnly" onchange="applyFilters()" style="width: 16px; height: 16px; cursor: pointer; accent-color: #1976d2;">
+                    내 지점만 보기
+                </label>
+            </div>
+
+            <div class="product-tabs">
+                <div class="product-tabs-label">상품명</div>
+                <div class="tabs-container" id="productTabs">
+                </div>
+            </div>
+
+            <div class="total-count">총 <span id="totalCount">0</span>개 항목</div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Column - Table -->
+            <div class="left-column">
+                <div class="table-wrapper">
+                    <table id="productStatsTable">
+                        <thead>
+                            <tr>
+                                <th>상품내순위</th>
+                                <th>상품명</th>
+                                <th>본부명</th>
+                                <th>지점명</th>
+                                <th>신규건수</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productStatsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Column - Details -->
+            <div class="right-column">
+                <!-- Know-how Section -->
+                <div class="detail-section">
+                    <div class="detail-header">
+                        <div class="detail-title"><span class="emoji">📝</span> 영업 노하우</div>
+                        <div class="detail-meta" id="knowhowMeta">선택된 항목 없음</div>
+                    </div>
+                    <div class="detail-content" id="knowhowContent">
+                    </div>
+                </div>
+
+                <!-- Customer Stats Section -->
+                <div class="detail-section">
+                    <div class="detail-header">
+                        <div class="detail-title"><span class="emoji">📊</span> 상품 고객 통계</div>
+                        <div class="detail-meta" id="statsMeta">선택된 상품 없음</div>
+                    </div>
+                    <div class="detail-content">
+                        <div class="stats-selector">
+                            <select id="statsType" onchange="updateStatsView()">
+                                <option value="age">연령대별</option>
+                                <option value="gender">성별</option>
+                                <option value="occupation">직업별</option>
+                                <option value="balance">수신평잔별</option>
+                                <option value="asset">자산규모별</option>
+                                <option value="region">거주지역별</option>
+                            </select>
+                        </div>
+                        <div class="stats-grid" id="statsGrid">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target List Section -->
+                <div class="detail-section">
+                    <div class="detail-header">
+                        <div class="detail-title"><span class="emoji">🎯</span> 관련 타겟 리스트</div>
+                        <div class="detail-meta" id="targetMeta">선택된 상품 없음</div>
+                    </div>
+                    <div class="target-list-wrapper">
+                        <div id="targetListContainer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Know-how Write/Edit Modal -->
+    <div id="writeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">영업노하우 등록/수정</h2>
+                <button class="modal-close" onclick="closeModal('writeModal')">&times;</button>
+            </div>
+            <div class="modal-subtitle">
+                <span id="modalBranchInfo"></span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">영업 노하우</label>
+                    <textarea class="form-textarea" id="knowhowText" placeholder="영업 노하우를 입력하세요"></textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 1,000자</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('writeModal')">닫기</button>
+                <button class="btn btn-primary" onclick="saveKnowHow()">적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extract Modal -->
+    <div id="extractModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">타겟 리스트 추출</h2>
+                <button class="modal-close" onclick="closeModal('extractModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">리스트명</label>
+                    <div id="extractListTitle" style="padding: 0.875rem 1rem; background: var(--gray-100); border: 2px solid var(--gray-300);"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">예상 대상 고객 수</label>
+                    <div id="extractListCount" style="padding: 0.875rem 1rem; background: var(--gray-100); border: 2px solid var(--gray-300); font-family: 'JetBrains Mono', monospace; font-weight: 600;"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">파일 형식</label>
+                    <select class="form-input" id="extractFormat">
+                        <option value="xlsx">Excel (XLSX)</option>
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">포함 정보</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" checked> 고객명
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" checked> 연락처
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" checked> AI 신규가입 예측확률
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" checked> 고객 특성 분석
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox"> 거래 이력
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('extractModal')">취소</button>
+                <button class="btn btn-primary" onclick="confirmExtract()">추출하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - same structure as before
+        const allData = [
+            // 전설의적금
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '중부본부', branch: '서소문지점', count: 45, productRank: 1, groupRank: 1, knowhow: `🎯 주요 타겟 고객
+
+20대 후반~30대 초반 사회초년생 (입사 3~7년차)
+월급 300~500만원 직장인 중 목돈 마련 목적 고객
+
+🔄 전환 포인트 / 설득 논리
+
+"지금 금리가 제일 높을 때"라는 타이밍 강조
+3년 뒤 목돈(결혼자금, 전세자금) 필요 시점과 만기 일치
+
+🗣️ 실제 사용 영업 멘트
+
+"과장님, 지금이 적금 들기 딱 좋은 타이밍입니다.
+금리 4.5% 확정이고, 월 50만원씩 3년 하시면 2천만원 모으세요.
+결혼 준비하신다고 하셨잖아요. 딱 맞춰서 목돈 만드실 수 있어요."` },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '서부본부', branch: '신도림지점', count: 42, productRank: 2, groupRank: 2, knowhow: `🎯 주요 타겟 고객
+
+지하철역 인근 직장인 (점심시간 유동인구 활용)
+20~30대 SNS 활용 세대
+
+🔄 전환 포인트 / 설득 논리
+
+점심시간 부스에서 "5분이면 가입 끝" 편리성 강조
+첫 달 우대금리 이벤트로 즉시 혜택 체감
+
+🗣️ 실제 사용 영업 멘트
+
+"점심 드시러 가시는 길에 5분만 시간 내주세요.
+이번 달 가입하시면 첫 달 금리 0.5% 더 드립니다.
+앱으로 바로 가입되니까 앉아서 커피 한 잔 하시는 동안 끝나요."` },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '경남본부', branch: '부산지점', count: 39, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '경기본부', branch: '분당지점', count: 36, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '호남본부', branch: '광주지점', count: 33, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '충남본부', branch: '대전지점', count: 30, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '강원본부', branch: '춘천지점', count: 27, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '경기본부', branch: '강남지점', count: 24, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '서부본부', branch: '영등포지점', count: 21, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '전설의적금', region: '중부본부', branch: '종로지점', count: 18, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 개인형 IRP
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '서부본부', branch: '신도림지점', count: 38, productRank: 1, groupRank: 1, knowhow: `🎯 주요 타겟 고객
+
+40~50대 중견기업 재직 직장인 (연봉 6천~1억)
+개인사업자 중 세무사 통한 절세 상담 받은 고객
+
+🔄 전환 포인트 / 설득 논리
+
+"연말정산 때 세액공제 900만원까지 받을 수 있다"는 즉각적 혜택 강조
+퇴직금을 IRP로 받으면 세금 이연 효과로 목돈 유지 가능하다는 점
+
+🗣️ 실제 사용 영업 멘트
+
+"과장님, 내년 2월 연말정산 때 환급금 최대 148만원 더 받으실 수 있습니다.
+월 50만원씩만 IRP 넣으시면 1년에 세금 90만원 돌려받으세요.
+퇴직금 나오면 여기로 받으시면 세금 안 떼고 통째로 굴리실 수 있어요."` },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '경기본부', branch: '강남지점', count: 35, productRank: 2, groupRank: 2, knowhow: `🎯 주요 타겟 고객
+
+30대 후반~40대 초반 스타트업·IT 기업 재직자
+연봉 8천 이상 고소득 전문직 (의사, 변호사, 회계사)
+
+🔄 전환 포인트 / 설득 논리
+
+"연금저축 + IRP 합쳐서 최대 900만원 세액공제" 정보에 관심 전환
+스톡옵션·성과급 받을 때 세금 부담 → IRP로 절세 가능
+
+🗣️ 실제 사용 영업 멘트
+
+"지금 연금저축 하고 계시죠? 거기에 300만원 더 넣으실 수 있어요.
+합쳐서 900만원까지 세액공제 되니까 실제로 148만원 환급받으세요.
+성과급 받으실 때 세금 아까우시면 여기 넣으시면 됩니다."` },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '경기본부', branch: '분당지점', count: 32, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '중부본부', branch: '서소문지점', count: 29, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '경남본부', branch: '부산지점', count: 26, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '호남본부', branch: '광주지점', count: 23, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '충남본부', branch: '대전지점', count: 20, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '강원본부', branch: '춘천지점', count: 17, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '서부본부', branch: '영등포지점', count: 14, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: 'IRP', product: '개인형 IRP', region: '경북본부', branch: '대구지점', count: 11, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 프리미엄적금
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '경기본부', branch: '강남지점', count: 32, productRank: 1, groupRank: 1, knowhow: `🎯 주요 타겟 고객
+
+자산 5억 이상 보유 자산가 (부동산 2채 이상)
+40~50대 기업 임원급 / 개인사업 성공한 대표
+
+🔄 전환 포인트 / 설득 논리
+
+"프리미엄 고객 전용 특별금리"라는 VIP 대우 인식
+문화예술 공연 초대권, 골프장 우대 등 부가서비스
+
+🗣️ 실제 사용 영업 멘트
+
+"대표님, 이 상품은 자산 5억 이상 고객님만 가입 가능합니다.
+일반 적금보다 금리 1% 더 높고, 국립극장 VIP석 초대권도 드립니다.
+목돈 굴리시면서 세금 혜택도 받으시고, 문화생활도 즐기세요."` },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '중부본부', branch: '종로지점', count: 28, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '경기본부', branch: '분당지점', count: 25, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '경남본부', branch: '부산지점', count: 22, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '서부본부', branch: '신도림지점', count: 19, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '호남본부', branch: '광주지점', count: 16, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '충남본부', branch: '대전지점', count: 13, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '경북본부', branch: '대구지점', count: 10, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '강원본부', branch: '춘천지점', count: 7, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '프리미엄적금', region: '서부본부', branch: '영등포지점', count: 4, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 자유적금
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '경기본부', branch: '강남지점', count: 28, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '서부본부', branch: '신도림지점', count: 25, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '경기본부', branch: '분당지점', count: 22, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '중부본부', branch: '서소문지점', count: 19, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '경남본부', branch: '부산지점', count: 16, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '호남본부', branch: '광주지점', count: 13, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '충남본부', branch: '대전지점', count: 10, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '경북본부', branch: '대구지점', count: 7, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '강원본부', branch: '춘천지점', count: 4, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '적금', product: '자유적금', region: '중부본부', branch: '종로지점', count: 2, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 주택청약종합저축
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '경기본부', branch: '분당지점', count: 26, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '경기본부', branch: '강남지점', count: 23, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '서부본부', branch: '신도림지점', count: 20, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '중부본부', branch: '서소문지점', count: 17, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '경남본부', branch: '부산지점', count: 14, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '호남본부', branch: '광주지점', count: 11, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '충남본부', branch: '대전지점', count: 8, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '경북본부', branch: '대구지점', count: 5, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '강원본부', branch: '춘천지점', count: 3, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '주택청약종합저축', region: '중부본부', branch: '종로지점', count: 2, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 정기예금
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '강원본부', branch: '춘천지점', count: 24, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '경남본부', branch: '부산지점', count: 21, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '경기본부', branch: '분당지점', count: 18, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '호남본부', branch: '광주지점', count: 15, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '충남본부', branch: '대전지점', count: 12, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '경북본부', branch: '대구지점', count: 9, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '중부본부', branch: '서소문지점', count: 6, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '서부본부', branch: '신도림지점', count: 4, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '경기본부', branch: '강남지점', count: 3, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '예금', product: '정기예금', region: '중부본부', branch: '종로지점', count: 2, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 글로벌주식형펀드
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '경기본부', branch: '강남지점', count: 22, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '경기본부', branch: '분당지점', count: 19, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '중부본부', branch: '종로지점', count: 16, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '서부본부', branch: '신도림지점', count: 13, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '경남본부', branch: '부산지점', count: 10, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '호남본부', branch: '광주지점', count: 7, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '충남본부', branch: '대전지점', count: 5, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '경북본부', branch: '대구지점', count: 4, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '강원본부', branch: '춘천지점', count: 3, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '글로벌주식형펀드', region: '중부본부', branch: '서소문지점', count: 2, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 국내주식형펀드
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '서부본부', branch: '신도림지점', count: 20, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '경기본부', branch: '강남지점', count: 17, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '경기본부', branch: '분당지점', count: 14, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '중부본부', branch: '서소문지점', count: 11, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '경남본부', branch: '부산지점', count: 8, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '호남본부', branch: '광주지점', count: 6, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '충남본부', branch: '대전지점', count: 5, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '경북본부', branch: '대구지점', count: 4, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '강원본부', branch: '춘천지점', count: 3, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '국내주식형펀드', region: '중부본부', branch: '종로지점', count: 2, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 채권형펀드
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '경남본부', branch: '부산지점', count: 18, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '강원본부', branch: '춘천지점', count: 15, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '호남본부', branch: '광주지점', count: 12, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '충남본부', branch: '대전지점', count: 9, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '경북본부', branch: '대구지점', count: 6, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '경기본부', branch: '분당지점', count: 5, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '경기본부', branch: '강남지점', count: 4, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '중부본부', branch: '서소문지점', count: 3, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '서부본부', branch: '신도림지점', count: 2, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '펀드', product: '채권형펀드', region: '중부본부', branch: '종로지점', count: 1, productRank: 10, groupRank: 10, knowhow: '' },
+
+            // 주택담보대출
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '경기본부', branch: '분당지점', count: 30, productRank: 1, groupRank: 1, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '경기본부', branch: '강남지점', count: 27, productRank: 2, groupRank: 2, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '서부본부', branch: '신도림지점', count: 24, productRank: 3, groupRank: 3, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '경남본부', branch: '부산지점', count: 21, productRank: 4, groupRank: 4, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '중부본부', branch: '서소문지점', count: 18, productRank: 5, groupRank: 5, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '호남본부', branch: '광주지점', count: 15, productRank: 6, groupRank: 6, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '충남본부', branch: '대전지점', count: 12, productRank: 7, groupRank: 7, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '경북본부', branch: '대구지점', count: 9, productRank: 8, groupRank: 8, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '강원본부', branch: '춘천지점', count: 6, productRank: 9, groupRank: 9, knowhow: '' },
+            { week: '2024-W49', group: '대출', product: '주택담보대출', region: '중부본부', branch: '종로지점', count: 3, productRank: 10, groupRank: 10, knowhow: '' },
+        ];
+
+        // Customer statistics data (same as before - abbreviated for space)
+        const customerStats = {
+            '전설의적금': {
+                age: [
+                    { label: '10대~20대', value: 8, percent: 10.7 },
+                    { label: '20대~30대', value: 18, percent: 24.0 },
+                    { label: '30대~40대', value: 23, percent: 30.7 },
+                    { label: '40대~50대', value: 15, percent: 20.0 },
+                    { label: '50대~60대', value: 9, percent: 12.0 },
+                    { label: '60대 이상', value: 2, percent: 2.7 }
+                ],
+                gender: [
+                    { label: '남성', value: 42, percent: 56.0 },
+                    { label: '여성', value: 33, percent: 44.0 }
+                ],
+                occupation: [
+                    { label: '직장인', value: 35, percent: 46.7 },
+                    { label: '개인사업자', value: 18, percent: 24.0 },
+                    { label: '전문직', value: 12, percent: 16.0 },
+                    { label: '자영업', value: 6, percent: 8.0 },
+                    { label: '기타', value: 4, percent: 5.3 }
+                ],
+                balance: [
+                    { label: '100만원 이하', value: 15, percent: 20.0 },
+                    { label: '100만원~300만원', value: 22, percent: 29.3 },
+                    { label: '300만원~500만원', value: 18, percent: 24.0 },
+                    { label: '500만원~1000만원', value: 12, percent: 16.0 },
+                    { label: '1000만원 초과', value: 8, percent: 10.7 }
+                ],
+                asset: [
+                    { label: '5천만원 이하', value: 28, percent: 37.3 },
+                    { label: '5천만원~1억', value: 25, percent: 33.3 },
+                    { label: '1억~3억', value: 15, percent: 20.0 },
+                    { label: '3억 초과', value: 7, percent: 9.3 }
+                ],
+                region: [
+                    { label: '서울', value: 32, percent: 42.7 },
+                    { label: '경기', value: 28, percent: 37.3 },
+                    { label: '인천', value: 8, percent: 10.7 },
+                    { label: '기타', value: 7, percent: 9.3 }
+                ]
+            },
+            '개인형 IRP': {
+                age: [
+                    { label: '10대~20대', value: 2, percent: 2.9 },
+                    { label: '20대~30대', value: 15, percent: 22.1 },
+                    { label: '30대~40대', value: 28, percent: 41.2 },
+                    { label: '40대~50대', value: 18, percent: 26.5 },
+                    { label: '50대~60대', value: 5, percent: 7.4 }
+                ],
+                gender: [
+                    { label: '남성', value: 45, percent: 66.2 },
+                    { label: '여성', value: 23, percent: 33.8 }
+                ],
+                occupation: [
+                    { label: '직장인', value: 52, percent: 76.5 },
+                    { label: '전문직', value: 8, percent: 11.8 },
+                    { label: '개인사업자', value: 6, percent: 8.8 },
+                    { label: '기타', value: 2, percent: 2.9 }
+                ],
+                balance: [
+                    { label: '100만원 이하', value: 3, percent: 4.4 },
+                    { label: '100만원~500만원', value: 12, percent: 17.6 },
+                    { label: '500만원~1000만원', value: 28, percent: 41.2 },
+                    { label: '1000만원~3000만원', value: 18, percent: 26.5 },
+                    { label: '3000만원 초과', value: 7, percent: 10.3 }
+                ],
+                asset: [
+                    { label: '5천만원 이하', value: 8, percent: 11.8 },
+                    { label: '5천만원~1억', value: 15, percent: 22.1 },
+                    { label: '1억~3억', value: 28, percent: 41.2 },
+                    { label: '3억~5억', value: 12, percent: 17.6 },
+                    { label: '5억 초과', value: 5, percent: 7.4 }
+                ],
+                region: [
+                    { label: '서울', value: 38, percent: 55.9 },
+                    { label: '경기', value: 22, percent: 32.4 },
+                    { label: '인천', value: 5, percent: 7.4 },
+                    { label: '기타', value: 3, percent: 4.4 }
+                ]
+            },
+            // Add default stats for other products
+            '프리미엄적금': { age: [{ label: '30대~40대', value: 18, percent: 42.9 }], gender: [{ label: '남성', value: 24, percent: 57.1 }, { label: '여성', value: 18, percent: 42.9 }], occupation: [{ label: '전문직', value: 18, percent: 42.9 }], balance: [{ label: '1000만원~3000만원', value: 18, percent: 42.9 }], asset: [{ label: '3억~5억', value: 18, percent: 42.9 }], region: [{ label: '서울 강남', value: 22, percent: 52.4 }] },
+            '자유적금': { age: [{ label: '20대~30대', value: 22, percent: 45.8 }], gender: [{ label: '남성', value: 26, percent: 54.2 }, { label: '여성', value: 22, percent: 45.8 }], occupation: [{ label: '직장인', value: 25, percent: 52.1 }], balance: [{ label: '50만원 이하', value: 22, percent: 45.8 }], asset: [{ label: '1천만원 이하', value: 25, percent: 52.1 }], region: [{ label: '경기', value: 22, percent: 45.8 }] },
+            '주택청약종합저축': { age: [{ label: '20대~30대', value: 35, percent: 56.5 }], gender: [{ label: '남성', value: 38, percent: 61.3 }, { label: '여성', value: 24, percent: 38.7 }], occupation: [{ label: '직장인', value: 48, percent: 77.4 }], balance: [{ label: '300만원~500만원', value: 28, percent: 45.2 }], asset: [{ label: '5천만원~1억', value: 28, percent: 45.2 }], region: [{ label: '경기', value: 30, percent: 48.4 }] },
+            '정기예금': { age: [{ label: '50대~60대', value: 18, percent: 40.9 }], gender: [{ label: '남성', value: 26, percent: 59.1 }, { label: '여성', value: 18, percent: 40.9 }], occupation: [{ label: '은퇴자', value: 22, percent: 50.0 }], balance: [{ label: '1000만원~3000만원', value: 18, percent: 40.9 }], asset: [{ label: '1억~3억', value: 20, percent: 45.5 }], region: [{ label: '경기', value: 18, percent: 40.9 }] },
+            '글로벌주식형펀드': { age: [{ label: '30대~40대', value: 15, percent: 42.9 }], gender: [{ label: '남성', value: 25, percent: 71.4 }, { label: '여성', value: 10, percent: 28.6 }], occupation: [{ label: '직장인', value: 18, percent: 51.4 }], balance: [{ label: '3000만원~5000만원', value: 15, percent: 42.9 }], asset: [{ label: '3억~5억', value: 15, percent: 42.9 }], region: [{ label: '서울 강남', value: 20, percent: 57.1 }] },
+            '국내주식형펀드': { age: [{ label: '30대~40대', value: 12, percent: 44.4 }], gender: [{ label: '남성', value: 18, percent: 66.7 }, { label: '여성', value: 9, percent: 33.3 }], occupation: [{ label: '직장인', value: 20, percent: 74.1 }], balance: [{ label: '1000만원~3000만원', value: 12, percent: 44.4 }], asset: [{ label: '1억~3억', value: 14, percent: 51.9 }], region: [{ label: '서울', value: 12, percent: 44.4 }] },
+            '채권형펀드': { age: [{ label: '50대~60대', value: 10, percent: 45.5 }], gender: [{ label: '남성', value: 13, percent: 59.1 }, { label: '여성', value: 9, percent: 40.9 }], occupation: [{ label: '은퇴자', value: 10, percent: 45.5 }], balance: [{ label: '3000만원~5000만원', value: 10, percent: 45.5 }], asset: [{ label: '3억~5억', value: 10, percent: 45.5 }], region: [{ label: '서울', value: 10, percent: 45.5 }] },
+            '주택담보대출': { age: [{ label: '30대~40대', value: 25, percent: 49.0 }], gender: [{ label: '남성', value: 35, percent: 68.6 }, { label: '여성', value: 16, percent: 31.4 }], occupation: [{ label: '직장인', value: 38, percent: 74.5 }], balance: [{ label: '1000만원~3000만원', value: 25, percent: 49.0 }], asset: [{ label: '3억~5억', value: 22, percent: 43.1 }], region: [{ label: '경기', value: 28, percent: 54.9 }] }
+        };
+
+        // Target lists (same as before - abbreviated)
+        const targetLists = {
+            '전설의적금': [
+                { id: 1, title: '전설의적금 신규 가망 타겟리스트 (20~30대 직장인 대상)', count: 1247, aiScore: 92, desc: '최근 6개월 내 급여이체가 시작된 2030 직장인으로 급여 입금 후 잔액이 일정 수준 이상 유지되어 적금 가입 가능성이 높은 고객' },
+                { id: 2, title: '전설의적금 신규 가망 타겟리스트 (개인사업자 대상)', count: 856, aiScore: 88, desc: '사업자통장 운영 중이나 개인 저축 상품이 없으며 매출 안정성이 확인된 자영업자' },
+                { id: 3, title: '전설의적금 신규 가망 타겟리스트 (미성년자 대상)', count: 423, aiScore: 85, desc: '부모가 우리 은행 주거래 고객이며 용돈관리 및 금융교육 목적으로 적금 개설 수요가 예상되는 자녀' },
+                { id: 4, title: '전설의적금 신규 가망 타겟리스트 (50~60대 은퇴준비 대상)', count: 312, aiScore: 82, desc: '최근 퇴직금 또는 목돈이 입금되었으나 즉시 인출하지 않고 안정적 이자 수익을 원하는 보수적 투자 성향 고객' }
+            ],
+            '개인형 IRP': [
+                { id: 7, title: '개인형 IRP 신규 가망 타겟리스트 (30~40대 고소득자)', count: 2134, aiScore: 95, desc: '연소득 8천만원 이상으로 추정되며 연말정산 세액공제 혜택에 민감하여 절세 상품 가입 의향이 높은 고객' },
+                { id: 8, title: '개인형 IRP 신규 가망 타겟리스트 (전문직군 대상)', count: 1567, aiScore: 91, desc: '의사, 변호사, 회계사 등 면허증 기반 전문직 종사자로 높은 소득 대비 노후 준비 니즈가 큰 고객' },
+                { id: 9, title: '개인형 IRP 신규 가망 타겟리스트 (IT업종 종사자)', count: 892, aiScore: 87, desc: '주요 IT/테크 기업 재직자로 스톡옵션 및 성과급 수령 시 절세 방안을 찾는 고객' }
+            ],
+            '프리미엄적금': [
+                { id: 12, title: '프리미엄적금 신규 가망 타겟리스트 (고액자산가)', count: 567, aiScore: 94, desc: '보유 금융자산이 3억원 이상이며 다수의 부동산 보유가 추정되는 VIP 전용 상품 적합 고객' },
+                { id: 13, title: '프리미엄적금 신규 가망 타겟리스트 (VIP 고객 대상)', count: 234, aiScore: 96, desc: 'PB 센터 관리 중인 우대 고객으로 자산 포트폴리오 다각화가 필요한 시점의 고객' }
+            ],
+            '자유적금': [
+                { id: 16, title: '자유적금 신규 가망 타겟리스트 (20대 사회초년생)', count: 1893, aiScore: 88, desc: '입사 3년 이내 신입사원으로 급여 대비 저축 여력은 있으나 정기적금 납입 부담을 느끼는 고객' },
+                { id: 17, title: '자유적금 신규 가망 타겟리스트 (대학생)', count: 1456, aiScore: 85, desc: '학자금대출 보유 또는 학생증 인증 이력이 있으며 아르바이트 수입을 소액 저축할 수 있는 유연한 상품 니즈가 있는 고객' }
+            ],
+            '주택청약종합저축': [
+                { id: 20, title: '주택청약종합저축 신규 가망 타겟리스트 (신혼부부)', count: 2456, aiScore: 94, desc: '최근 2년 내 혼인신고가 확인되며 생애 최초 주택 구입 계획 가능성이 매우 높은 청약통장 미보유 고객' },
+                { id: 21, title: '주택청약종합저축 신규 가망 타겟리스트 (30대 무주택자)', count: 3124, aiScore: 92, desc: '주택 보유 이력이 없고 전세자금대출 또는 월세 이체 패턴이 확인되어 내집 마련 목표가 명확한 30대 고객' }
+            ],
+            '정기예금': [
+                { id: 24, title: '정기예금 신규 가망 타겟리스트 (은퇴자)', count: 1834, aiScore: 91, desc: '60대 이상으로 최근 퇴직금 입금이 확인되며 안정적 이자 수익을 선호하는 보수적 성향의 위험 자산 회피 고객' },
+                { id: 25, title: '정기예금 신규 가망 타겟리스트 (목돈 보유자)', count: 1245, aiScore: 88, desc: '최근 3개월 내 3천만원 이상 목돈이 입금되었으나 투자 상품 없이 입출금 계좌에만 보관 중인 단기 자금 운용 계획 불분명 고객' }
+            ],
+            '글로벌주식형펀드': [
+                { id: 28, title: '글로벌주식형펀드 신규 가망 타겟리스트 (해외투자 관심고객)', count: 1456, aiScore: 93, desc: '외화예금 보유 또는 해외송금 이력으로 글로벌 투자 관심도가 높으며 환율 변동 리스크에 대한 이해도가 있는 고객' },
+                { id: 29, title: '글로벌주식형펀드 신규 가망 타겟리스트 (고액 자산가)', count: 892, aiScore: 90, desc: '투자 가능 금융자산 1억원 이상이며 이미 국내 주식형 펀드 보유 중인 포트폴리오 다각화 필요 고객' }
+            ],
+            '국내주식형펀드': [
+                { id: 32, title: '국내주식형펀드 신규 가망 타겟리스트 (주식투자 초보자)', count: 1723, aiScore: 89, desc: '증권계좌 미보유 또는 거래 이력이 거의 없으며 직접 주식 투자는 부담스러워하나 전문가 운용 펀드를 통한 간접 투자에 관심 있는 고객' },
+                { id: 33, title: '국내주식형펀드 신규 가망 타겟리스트 (30대 직장인)', count: 1345, aiScore: 86, desc: '안정적 급여소득이 있는 30대로 월 50~100만원 여유 자금이 확인되며 적금 외 추가 수익을 원하는 고객' }
+            ],
+            '채권형펀드': [
+                { id: 36, title: '채권형펀드 신규 가망 타겟리스트 (보수적 투자자)', count: 1567, aiScore: 90, desc: '50대 이상으로 주식형 펀드 경험이 없으며 예금보다 약간 높은 수익을 원하나 원금 손실 위험은 최소화하려는 고객' },
+                { id: 37, title: '채권형펀드 신규 가망 타겟리스트 (은퇴 준비자)', count: 1234, aiScore: 87, desc: '은퇴 5년 이내로 추정되며 퇴직금 및 연금 수령 준비 중인 안정적 월배당 상품 니즈가 명확한 고객' }
+            ],
+            '주택담보대출': [
+                { id: 40, title: '주택담보대출 신규 가망 타겟리스트 (아파트 입주 예정자)', count: 2345, aiScore: 95, desc: '최근 신규 아파트 분양 계약이 확인되며 잔금 납부 시점이 3~6개월 내 도래하여 대출 실행 시기가 명확한 고객' },
+                { id: 41, title: '주택담보대출 신규 가망 타겟리스트 (전세→매매 전환)', count: 1876, aiScore: 92, desc: '현재 전세자금대출 보유 중이며 최근 주택 매매 관련 문의 또는 부동산 거래 조회 이력이 있어 자가 구입 전환 가능성이 높은 고객' }
+            ]
+        };
+
+        let filteredData = [];
+        let selectedProduct = '';
+        let selectedBranch = '';
+        let selectedWeek = '2024-W49';
+        let currentProductFilter = '';
+
+        // Initialize
+        function initializeProductTabs() {
+            const products = [...new Set(allData.map(item => item.product))];
+            
+            // Reorder products to put 개인형 IRP first
+            const reorderedProducts = [];
+            const irpProduct = '개인형 IRP';
+            
+            if (products.includes(irpProduct)) {
+                reorderedProducts.push(irpProduct);
+            }
+            
+            products.forEach(product => {
+                if (product !== irpProduct) {
+                    reorderedProducts.push(product);
+                }
+            });
+            
+            const tabsContainer = document.getElementById('productTabs');
+            
+            // Add "전체" tab
+            const allTab = document.createElement('a');
+            allTab.className = 'tab';
+            allTab.textContent = '전체';
+            allTab.onclick = () => selectProductTab('');
+            tabsContainer.appendChild(allTab);
+
+            // Add product tabs in reordered sequence
+            reorderedProducts.forEach(product => {
+                const tab = document.createElement('a');
+                tab.className = 'tab';
+                tab.textContent = product;
+                tab.onclick = () => selectProductTab(product);
+                tabsContainer.appendChild(tab);
+            });
+            
+            // Set 개인형 IRP as default selection
+            currentProductFilter = irpProduct;
+        }
+
+        function selectProductTab(product) {
+            currentProductFilter = product;
+            
+            // Update tab styles
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if ((product === '' && tab.textContent === '전체') || tab.textContent === product) {
+                    tab.classList.add('active');
+                }
+            });
+
+            applyFilters();
+        }
+
+        // Initialize
+        function init() {
+            initializeProductTabs();
+            // Select 개인형 IRP tab after tabs are created
+            selectProductTab('개인형 IRP');
+        }
+
+        function applyFilters() {
+            selectedWeek = document.getElementById('weekSelector').value;
+            const myBranchOnly = document.getElementById('myBranchOnly') ? document.getElementById('myBranchOnly').checked : false;
+
+            console.log('Current product filter:', currentProductFilter);
+
+            // Filter data
+            filteredData = allData.filter(item => {
+                const weekMatch = item.week === selectedWeek;
+                const productMatch = currentProductFilter === '' || item.product === currentProductFilter;
+                return weekMatch && productMatch;
+            });
+
+            console.log('After basic filters:', filteredData.length);
+
+            // Apply "내 지점만 보기" filter
+            if (myBranchOnly) {
+                // For demo purposes, let's assume user's branch is "서소문지점"
+                const myBranch = '서소문지점';
+                filteredData = filteredData.filter(item => item.branch === myBranch);
+                console.log('After myBranch filter:', filteredData.length);
+            }
+
+            // Sort based on product filter
+            if (currentProductFilter === '') {
+                // For '전체', show ALL items sorted by productRank ascending, then by product name ascending
+                console.log('Sorting for 전체 view');
+                filteredData.sort((a, b) => {
+                    if (a.productRank !== b.productRank) {
+                        return a.productRank - b.productRank;
+                    }
+                    return a.product.localeCompare(b.product, 'ko');
+                });
+            } else {
+                // For specific product, sort by count descending (productRank)
+                console.log('Sorting for specific product view');
+                filteredData.sort((a, b) => {
+                    if (a.productRank !== b.productRank) {
+                        return a.productRank - b.productRank;
+                    }
+                    return b.count - a.count;
+                });
+            }
+
+            console.log('After sort, taking top 10 from:', filteredData.length);
+
+            // Take top 10
+            filteredData = filteredData.slice(0, 10);
+
+            console.log('Final filtered data:', filteredData.length);
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('productStatsBody');
+            document.getElementById('totalCount').textContent = filteredData.length;
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--gray-500);">필터 조건에 맞는 데이터가 없습니다.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredData.map((item, index) => `
+                <tr data-product="${item.product}" data-branch="${item.branch}" data-index="${index}">
+                    <td>${item.productRank === 1 ? '🏆' : item.productRank === 2 ? '🥈' : item.productRank === 3 ? '🥉' : ''} #${item.productRank}</td>
+                    <td><strong>${item.product}</strong></td>
+                    <td>${item.region}</td>
+                    <td>${item.branch}</td>
+                    <td class="number-cell">${item.count}</td>
+                </tr>
+            `).join('');
+
+            // Add click handlers
+            tbody.querySelectorAll('tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const index = parseInt(this.dataset.index);
+                    const item = filteredData[index];
+                    
+                    selectedProduct = item.product;
+                    selectedBranch = item.branch;
+
+                    updateRightPanel(item);
+                });
+            });
+
+            // Auto-select first item
+            if (filteredData.length > 0) {
+                const firstRow = tbody.querySelector('tr');
+                firstRow.classList.add('active');
+                selectedProduct = filteredData[0].product;
+                selectedBranch = filteredData[0].branch;
+                updateRightPanel(filteredData[0]);
+            }
+        }
+
+        function updateRightPanel(item) {
+            // Update know-how section
+            updateKnowhowSection(item);
+            
+            // Update stats section
+            updateStatsSection(item);
+            
+            // Update target list section
+            updateTargetListSection(item);
+        }
+
+        function updateKnowhowSection(item) {
+            const meta = document.getElementById('knowhowMeta');
+            const content = document.getElementById('knowhowContent');
+            
+            meta.textContent = `${item.product} - ${item.branch} | 신규건수: ${item.count}건`;
+
+            if (item.knowhow && item.knowhow.trim() !== '') {
+                content.innerHTML = `
+                    <div class="knowhow-content">${item.knowhow}</div>
+                    <button class="btn" onclick="openEditKnowhow()">수정하기</button>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="knowhow-empty">
+                        <div class="knowhow-empty-icon">💡</div>
+                        <div class="knowhow-empty-text">당신의 영업 노하우를 등록해주세요</div>
+                        <button class="btn btn-primary" onclick="openEditKnowhow()">+ 노하우 등록하기</button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStatsSection(item) {
+            const meta = document.getElementById('statsMeta');
+            meta.textContent = `${item.product}`;
+            
+            updateStatsView();
+        }
+
+        function updateStatsView() {
+            const statsGrid = document.getElementById('statsGrid');
+            const statsType = document.getElementById('statsType').value;
+            
+            if (!selectedProduct || !customerStats[selectedProduct]) {
+                statsGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--gray-500);">상품을 선택해주세요</div>';
+                return;
+            }
+
+            const stats = customerStats[selectedProduct][statsType];
+            
+            statsGrid.innerHTML = stats.map(stat => `
+                <div class="stat-item">
+                    <div class="stat-label">${stat.label}</div>
+                    <div class="stat-value">${stat.value}</div>
+                    <div class="stat-sublabel">${stat.percent}%</div>
+                </div>
+            `).join('');
+        }
+
+        function updateTargetListSection(item) {
+            const meta = document.getElementById('targetMeta');
+            const container = document.getElementById('targetListContainer');
+            
+            meta.textContent = `${item.product}`;
+
+            if (!targetLists[item.product]) {
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--gray-500);">타겟 리스트가 없습니다</div>';
+                return;
+            }
+
+            const lists = targetLists[item.product];
+            
+            container.innerHTML = lists.map(list => `
+                <div class="target-card">
+                    <div class="target-info">
+                        <div class="target-title">${list.title}</div>
+                        <div class="target-meta">
+                            ${list.desc}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="extractTargets(${list.id}, '${list.title}', ${list.count})">추출하기</button>
+                </div>
+            `).join('');
+        }
+
+        function openEditKnowhow() {
+            const item = filteredData.find(i => i.product === selectedProduct && i.branch === selectedBranch);
+            if (!item) return;
+
+            // Set modal subtitle
+            document.getElementById('modalBranchInfo').textContent = `${item.branch} | ${item.region}`;
+
+            // Set default template if empty, otherwise use existing knowhow
+            const defaultTemplate = `🎯 주요 타겟 고객
+
+이 멘트가 실제로 먹혔던 고객 유형
+예) 개인사업자 / 소상공인 / 40~50대 직장인
+
+🔄 전환 포인트 / 설득 논리
+
+고객 태도가 바뀐 결정적 이유 한 가지
+예)
+• "안 하면 손해"라는 인식 전환
+• 정책성·압류방지 구조 이해
+• 다른 금융상품과의 차이 인지
+
+🗣️ 실제 사용 영업 멘트
+
+설명 없이, 실제 말한 그대로
+예)
+"대표님, 이건 수익 내는 상품이 아니라
+접을 때 대표님 몫 지켜주는 퇴직금 통장입니다."`;
+
+            const textArea = document.getElementById('knowhowText');
+            if (item.knowhow && item.knowhow.trim() !== '') {
+                textArea.value = item.knowhow;
+            } else {
+                textArea.value = defaultTemplate;
+            }
+            
+            updateCharCount();
+            
+            document.getElementById('writeModal').classList.add('show');
+        }
+
+        function updateCharCount() {
+            const textArea = document.getElementById('knowhowText');
+            const charCount = document.getElementById('charCount');
+            const count = textArea.value.length;
+            charCount.textContent = count;
+            
+            if (count > 1000) {
+                charCount.style.color = '#d32f2f';
+            } else {
+                charCount.style.color = '#999';
+            }
+        }
+
+        // Add event listener for character count
+        document.addEventListener('DOMContentLoaded', function() {
+            const textArea = document.getElementById('knowhowText');
+            if (textArea) {
+                textArea.addEventListener('input', updateCharCount);
+            }
+        });
+
+        function saveKnowHow() {
+            const knowhowText = document.getElementById('knowhowText').value.trim();
+
+            if (!knowhowText) {
+                alert('영업 노하우를 입력해주세요.');
+                return;
+            }
+
+            if (knowhowText.length > 1000) {
+                alert('영업 노하우는 1,000자를 초과할 수 없습니다.');
+                return;
+            }
+
+            // Update data
+            const item = allData.find(i => i.product === selectedProduct && i.branch === selectedBranch && i.week === selectedWeek);
+            if (item) {
+                item.knowhow = knowhowText;
+            }
+
+            alert('영업 노하우가 저장되었습니다.');
+            closeModal('writeModal');
+            
+            // Refresh display
+            const currentItem = filteredData.find(i => i.product === selectedProduct && i.branch === selectedBranch);
+            if (currentItem) {
+                updateKnowhowSection(currentItem);
+            }
+        }
+
+        function extractTargets(listId, title, count) {
+            document.getElementById('extractListTitle').textContent = title;
+            document.getElementById('extractListCount').textContent = `${count.toLocaleString()}명`;
+            document.getElementById('extractModal').classList.add('show');
+        }
+
+        function confirmExtract() {
+            const format = document.getElementById('extractFormat').value;
+            alert(`타겟 리스트를 ${format.toUpperCase()} 형식으로 추출합니다.`);
+            closeModal('extractModal');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>

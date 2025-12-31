@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영업 노하우 모음</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans KR', 'Malgun Gothic', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            margin: -2rem -2rem 2rem -2rem;
+            padding: 0;
+        }
+
+        .nav-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+            padding: 0 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            border-bottom: 3px solid transparent;
+            font-family: 'IBM Plex Sans KR', sans-serif;
+        }
+
+        .nav-tab:hover {
+            color: #333;
+            background: #f9f9f9;
+        }
+
+        .nav-tab.active {
+            color: rgb(12,62,196);
+            border-bottom-color: rgb(12,62,196);
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            background: transparent;
+            padding: 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid rgb(122,122,122);
+            border-radius: 4px;
+            background: white;
+            font-size: 13px;
+            min-width: 150px;
+            color: #333;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 35px 8px 12px;
+            border: 1px solid rgb(122,122,122);
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .search-box::after {
+            content: '🔍';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* View Tabs */
+        .view-tabs {
+            background: white;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .view-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .view-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgb(122,122,122);
+            border-radius: 4px;
+            background: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .view-tab.active {
+            background: rgb(12,62,196);
+            color: white;
+            border-color: rgb(12,62,196);
+            font-weight: 600;
+        }
+
+        .view-tab:hover:not(.active) {
+            background: #f5f5f5;
+        }
+
+        /* Know-how Cards */
+        .knowhow-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .knowhow-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.25rem;
+        }
+
+        .knowhow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .knowhow-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .knowhow-meta {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .knowhow-timestamp {
+            font-size: 0.75rem;
+            color: #999;
+            text-align: right;
+        }
+
+        .knowhow-content {
+            background: #fafafa;
+            padding: 1.25rem;
+            border-left: 3px solid rgb(12,62,196);
+            border-radius: 2px;
+        }
+
+        .knowhow-section {
+            margin-bottom: 1.25rem;
+        }
+
+        .knowhow-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .knowhow-section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgb(18,45,143);
+            margin-bottom: 0.5rem;
+        }
+
+        .knowhow-text {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #555;
+            white-space: pre-line;
+        }
+
+        /* No Data */
+        .no-data {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .no-data-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .no-data-text {
+            font-size: 14px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-tab">📊 대시보드</a>
+            <a href="knowhow.html" class="nav-tab active">💡 영업 노하우</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>영업 노하우 모음</h1>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <span class="filter-label">본부:</span>
+                <select class="filter-select">
+                    <option>전체</option>
+                    <option>중부본부</option>
+                    <option>서부본부</option>
+                    <option>경기본부</option>
+                </select>
+            </div>
+
+            <div class="search-box">
+                <input type="text" placeholder="검색...">
+            </div>
+        </div>
+
+        <!-- View Tabs -->
+        <div class="view-tabs">
+            <span class="view-label">상품명:</span>
+            <div class="view-tab active">전체</div>
+            <div class="view-tab">개인형 IRP</div>
+            <div class="view-tab">전설의적금</div>
+            <div class="view-tab">프리미엄적금</div>
+        </div>
+
+        <!-- Know-how List -->
+        <div class="knowhow-list">
+            <!-- Card 1 - 개인형 IRP #1 -->
+            <div class="knowhow-card" data-product="개인형 IRP">
+                <div class="knowhow-header">
+                    <div>
+                        <div class="knowhow-title">신도림지점</div>
+                        <div class="knowhow-meta">개인형 IRP | 서부본부</div>
+                    </div>
+                    <div class="knowhow-timestamp">최종 수정일: 2024-12-08 14:23:15</div>
+                </div>
+                <div class="knowhow-content">
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🎯 주요 타겟 고객</div>
+                        <div class="knowhow-text">40~50대 중견기업 재직 직장인 (연봉 6천~1억)
+개인사업자 중 세무사 통한 절세 상담 받은 고객</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🔄 전환 포인트 / 설득 논리</div>
+                        <div class="knowhow-text">"연말정산 때 세액공제 900만원까지 받을 수 있다"는 즉각적 혜택 강조
+퇴직금을 IRP로 받으면 세금 이연 효과로 목돈 유지 가능하다는 점</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🗣️ 실제 사용 영업 멘트</div>
+                        <div class="knowhow-text">"과장님, 내년 2월 연말정산 때 환급금 최대 148만원 더 받으실 수 있습니다.
+월 50만원씩만 IRP 넣으시면 1년에 세금 90만원 돌려받으세요.
+퇴직금 나오면 여기로 받으시면 세금 안 떼고 통째로 굴리실 수 있어요."</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 - 개인형 IRP #2 -->
+            <div class="knowhow-card" data-product="개인형 IRP">
+                <div class="knowhow-header">
+                    <div>
+                        <div class="knowhow-title">강남지점</div>
+                        <div class="knowhow-meta">개인형 IRP | 경기본부</div>
+                    </div>
+                    <div class="knowhow-timestamp">최종 수정일: 2024-12-08 10:15:42</div>
+                </div>
+                <div class="knowhow-content">
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🎯 주요 타겟 고객</div>
+                        <div class="knowhow-text">30대 후반~40대 초반 스타트업·IT 기업 재직자
+연봉 8천 이상 고소득 전문직 (의사, 변호사, 회계사)</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🔄 전환 포인트 / 설득 논리</div>
+                        <div class="knowhow-text">"연금저축 + IRP 합쳐서 최대 900만원 세액공제" 정보에 관심 전환
+스톡옵션·성과급 받을 때 세금 부담 → IRP로 절세 가능</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🗣️ 실제 사용 영업 멘트</div>
+                        <div class="knowhow-text">"지금 연금저축 하고 계시죠? 거기에 300만원 더 넣으실 수 있어요.
+합쳐서 900만원까지 세액공제 되니까 실제로 148만원 환급받으세요.
+성과급 받으실 때 세금 아까우시면 여기 넣으시면 됩니다."</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 - 전설의적금 #1 -->
+            <div class="knowhow-card" data-product="전설의적금">
+                <div class="knowhow-header">
+                    <div>
+                        <div class="knowhow-title">서소문지점</div>
+                        <div class="knowhow-meta">전설의적금 | 중부본부</div>
+                    </div>
+                    <div class="knowhow-timestamp">최종 수정일: 2024-12-07 16:45:33</div>
+                </div>
+                <div class="knowhow-content">
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🎯 주요 타겟 고객</div>
+                        <div class="knowhow-text">20대 후반~30대 초반 사회초년생 (입사 3~7년차)
+월급 300~500만원 직장인 중 목돈 마련 목적 고객</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🔄 전환 포인트 / 설득 논리</div>
+                        <div class="knowhow-text">"지금 금리가 제일 높을 때"라는 타이밍 강조
+3년 뒤 목돈(결혼자금, 전세자금) 필요 시점과 만기 일치</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🗣️ 실제 사용 영업 멘트</div>
+                        <div class="knowhow-text">"과장님, 지금이 적금 들기 딱 좋은 타이밍입니다.
+금리 4.5% 확정이고, 월 50만원씩 3년 하시면 2천만원 모으세요.
+결혼 준비하신다고 하셨잖아요. 딱 맞춰서 목돈 만드실 수 있어요."</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 - 전설의적금 #2 -->
+            <div class="knowhow-card" data-product="전설의적금">
+                <div class="knowhow-header">
+                    <div>
+                        <div class="knowhow-title">신도림지점</div>
+                        <div class="knowhow-meta">전설의적금 | 서부본부</div>
+                    </div>
+                    <div class="knowhow-timestamp">최종 수정일: 2024-12-07 09:22:18</div>
+                </div>
+                <div class="knowhow-content">
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🎯 주요 타겟 고객</div>
+                        <div class="knowhow-text">지하철역 인근 직장인 (점심시간 유동인구 활용)
+20~30대 SNS 활용 세대</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🔄 전환 포인트 / 설득 논리</div>
+                        <div class="knowhow-text">점심시간 부스에서 "5분이면 가입 끝" 편리성 강조
+첫 달 우대금리 이벤트로 즉시 혜택 체감</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🗣️ 실제 사용 영업 멘트</div>
+                        <div class="knowhow-text">"점심 드시러 가시는 길에 5분만 시간 내주세요.
+이번 달 가입하시면 첫 달 금리 0.5% 더 드립니다.
+앱으로 바로 가입되니까 앉아서 커피 한 잔 하시는 동안 끝나요."</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5 - 프리미엄적금 #1 -->
+            <div class="knowhow-card" data-product="프리미엄적금">
+                <div class="knowhow-header">
+                    <div>
+                        <div class="knowhow-title">강남지점</div>
+                        <div class="knowhow-meta">프리미엄적금 | 경기본부</div>
+                    </div>
+                    <div class="knowhow-timestamp">최종 수정일: 2024-12-06 15:30:25</div>
+                </div>
+                <div class="knowhow-content">
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🎯 주요 타겟 고객</div>
+                        <div class="knowhow-text">자산 5억 이상 보유 자산가 (부동산 2채 이상)
+40~50대 기업 임원급 / 개인사업 성공한 대표</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🔄 전환 포인트 / 설득 논리</div>
+                        <div class="knowhow-text">"프리미엄 고객 전용 특별금리"라는 VIP 대우 인식
+문화예술 공연 초대권, 골프장 우대 등 부가서비스</div>
+                    </div>
+                    <div class="knowhow-section">
+                        <div class="knowhow-section-title">🗣️ 실제 사용 영업 멘트</div>
+                        <div class="knowhow-text">"대표님, 이 상품은 자산 5억 이상 고객님만 가입 가능합니다.
+일반 적금보다 금리 1% 더 높고, 국립극장 VIP석 초대권도 드립니다.
+목돈 굴리시면서 세금 혜택도 받으시고, 문화생활도 즐기세요."</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // View tab selection
+        document.querySelectorAll('.view-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const productFilter = this.textContent.trim();
+                filterByProduct(productFilter);
+            });
+        });
+
+        function filterByProduct(product) {
+            document.querySelectorAll('.knowhow-card').forEach(card => {
+                if (product === '전체') {
+                    card.style.display = 'block';
+                } else {
+                    const cardProduct = card.getAttribute('data-product');
+                    if (cardProduct === product) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-box input');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            document.querySelectorAll('.knowhow-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
